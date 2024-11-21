@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Editor</title>
+  <script src="https://unpkg.com/htmx.org@1.5.0"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="h-screen w-screen">
+  <section class="p-8 w-full flex flex-col">
+    <div class="relative w-full gap-y-2 flex flex-col">
+      <label for="editor" class="text-2xl font-semibold">Type something:</label>
+      <textarea name="q" id="editor" rows="10" class=" p-2 border border-solid border-gray-300 rounded-lg" cols="50"
+        hx-get="/autocomplete" hx-trigger="keyup changed delay:500ms" hx-target="#suggestions"></textarea>
+      <ul id="suggestions"
+        class=" overflow-y-auto w-24 absolute right-0 top-10 border border-solid border-gray-300 bottom-0 left-auto [&>li]:p-2 [&>li]:cursor-pointer [&>li]:font-semibold text-sm [&>li]:hover:bg-gray-400  bg-gray-50">
+      </ul>
+    </div>
+  </section>
+  <script>
+    // handle click outside
+    function handleClickOutside(event) {
+      if (document.getElementById('suggestions').contains(event.target)) {
+        return
+      }
+      document.getElementById('suggestions').innerHTML = ''
+    }
+
+    // on click tab suggestion
+    function handleClickTab(event) {
+      document.getElementById('editor').value = event.target.textContent
+      document.getElementById('suggestions').innerHTML = ''
+    }
+
+    document.addEventListener('click', function (event) {
+      if (event.target.matches('#suggestions li')) {
+        // Set the selected suggestion to the textarea
+        document.getElementById('editor').value = event.target.textContent // Clear the suggestions list
+        document.getElementById('suggestions').innerHTML = ''
+      }
+    }) // Close the suggestions list when clicking outside
+
+    document.addEventListener('click', function (event) {
+      if (!event.target.closest('#editor') && !event.target.closest('#suggestions')) {
+        document.getElementById('suggestions').innerHTML = ''
+      }
+    });
+  </script>
+</body>
+
+</html>
